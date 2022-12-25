@@ -1,6 +1,6 @@
 import pygame, sys
 from pygame.locals import *
-from random import randint
+import random
 import math
 pygame.init()
 pygame.key.set_repeat(50)
@@ -43,19 +43,19 @@ class Player:
         
     def mouvement_haut(self):
         self.moving_high = True
-        self.rect[1] -= 1
+        self.rect[1] -= 3
         
     def mouvement_bas(self):
         self.moving_down = True
-        self.rect[1] += 1
+        self.rect[1] += 3
         
     def mouvement_droite(self):
         self.moving_right = True
-        self.rect[0] += 1
+        self.rect[0] += 3
         
     def mouvement_gauche(self):
         self.moving_left = True
-        self.rect[0] -= 1
+        self.rect[0] -= 3
     
     def draw(self):
         screen.blit(self.image, self.rect)
@@ -107,24 +107,6 @@ class Player:
                 self.current_sprite = 0
                 self.moving_right = False
             self.image = self.sprites_right[int(self.current_sprite)]
-    
-class Playerbullet:
-    def __init__(self, x, y, mouse_x, mouse_y):
-        self.x = x
-        self.y = y
-        self.mouse_x = mouse_x
-        self.mouse_y = mouse_y
-        self.speed = 5
-        self.angle = math.atan2(self.y-mouse_y, self.x-mouse_x) 
-        self.x_vel = math.cos(self.angle) * self.speed
-        self.y_vel = math.sin(self.angle) * self.speed
-    def main(self, screen):
-        self.x -= int(self.x_vel) +1.2
-        self.y -= int(self.y_vel)
-        
-        pygame.draw.circle(screen, (0,0,0),(self.x, self.y), 5)
-            
-        
 
         
 pygame.init()
@@ -141,18 +123,56 @@ position_BG = BG.get_rect()
 position_BG.topleft = (-1300, -50)
 player_bullets = []
 
+
+class Zombie:
+    def __init__(self):
+        self.monstre_image = pygame.image.load('0.png')
+        self.pos = self.monstre_image.get_rect()
+        self.pos.topleft =  [random.randint(0, screen_width-10), random.randint(0, screen_height-10)]
+        self.vitesse = 1
+        self.deplacement = []
+        self.deplacement.append(pygame.image.load('0.png'))
+        self.deplacement.append(pygame.image.load('1.png'))
+        self.deplacement.append(pygame.image.load('2.png'))
+        self.deplacement.append(pygame.image.load('3.png'))
+        self.sprite_actuelle = 0
+        self.mouvement = False
+        
+    def mouvements(self):
+        self.mouvement = True
+    
+    def affichage(self):
+        screen.blit(self.monstre_image, self.pos)
+        
+    def mvt(self):
+            if self.pos[0] < player.rect[0]:
+                self.pos[0] += self.vitesse
+            if self.pos[0] > player.rect[0]:
+                self.pos[0] -= self.vitesse
+            if self.pos[1] < player.rect[1]:
+                self.pos[1] += self.vitesse
+            if self.pos[1] > player.rect[1]:
+                self.pos[1] -= self.vitesse
+                
+                
+    def update(self,speed):
+        if self.mouvement == True:
+            self.sprite_actuelle += speed
+            if int(self.sprite_actuelle) >= len(self.deplacement):
+                self.sprite_actuelle = 0
+                self.mouvement = False
+            self.monstre_image = self.deplacement[int(self.sprite_actuelle)]
+        
+        
+    
+    
+            
+            
+lst_zmb = [Zombie() for k in range(15)]
 def main_jeux():   
     while True:
         screen.fill('blue')
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        
-        
-        
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    player_bullets.append(Playerbullet(player.x, player.y + 50, mouse_x, mouse_y))
-            
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
                     player.mouvement_droite()
@@ -174,8 +194,11 @@ def main_jeux():
       
             
         screen.blit(BG, position_BG)
-        for bullet in player_bullets:
-            bullet.main(screen)
+        for zmb in lst_zmb:
+            zmb.affichage()
+            zmb.mvt()
+            zmb.mouvements()
+            zmb.update(0.25)
         player.barre_vie()
         player.draw()
         player.update(0.25)
@@ -183,7 +206,7 @@ def main_jeux():
         clock.tick(60)
                 
                 
-        
+main_jeux()       
     
         
         
@@ -194,5 +217,8 @@ def main_jeux():
         
         
         
+
+
+
 
 
