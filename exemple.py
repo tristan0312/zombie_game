@@ -43,19 +43,18 @@ class Player:
         
     def mouvement_haut(self):
         self.moving_high = True
-        self.rect[1] -= 5
+
         
     def mouvement_bas(self):
         self.moving_down = True
-        self.rect[1] += 5
+
         
     def mouvement_droite(self):
         self.moving_right = True
-        self.rect[0] += 5
+
         
     def mouvement_gauche(self):
         self.moving_left = True
-        self.rect[0] -= 5
     
     def draw(self):
         screen.blit(self.image, self.rect)
@@ -117,54 +116,41 @@ screen_height = 720
 screen = pygame.display.set_mode((screen_width,screen_height))
 pygame.display.set_caption("zombie attack")
             
-player = Player(600,100)
+player = Player(screen_width/2, screen_height/2)
 BG = pygame.image.load('bg.png').convert_alpha()
 position_BG = BG.get_rect()
-position_BG.topleft = (-1300, -50)
-player_bullets = []
-
+position_BG.topleft = (-1100, -1300)
 
 class Zombie:
     def __init__(self):
-        self.monstre_image = pygame.image.load('0.png')
-        self.pos = self.monstre_image.get_rect()
-        self.pos.topleft =  [random.randint(0, screen_width-10), random.randint(0, screen_height-10)]
+        self.taille = 10
+        self.x = random.randint(0,  screen_width - self.taille)
+        self.y = random.randint(0,  screen_height - self.taille)
         self.vitesse = 1
-        self.deplacement = []
-        self.deplacement.append(pygame.image.load('0.png'))
-        self.deplacement.append(pygame.image.load('1.png'))
-        self.deplacement.append(pygame.image.load('2.png'))
-        self.deplacement.append(pygame.image.load('3.png'))
-        self.sprite_actuelle = 0
-        self.mouvement = False
+        self.couleur = (26, 162, 53)
         
-    def mouvements(self):
-        self.mouvement = True
-    
     def affichage(self):
-        screen.blit(self.monstre_image, self.pos)
+        pygame.draw.circle(screen, self.couleur, (self.x, self.y), self.taille)
         
-    def mvt(self):
-            if self.pos[0] < player.rect[0]:
-                self.pos[0] += self.vitesse
-            if self.pos[0] > player.rect[0]:
-                self.pos[0] -= self.vitesse
-            if self.pos[1] < player.rect[1]:
-                self.pos[1] += self.vitesse
-            if self.pos[1] > player.rect[1]:
-                self.pos[1] -= self.vitesse
-                
-                
-    def update(self,speed):
-        if self.mouvement == True:
-            self.sprite_actuelle += speed
-            if int(self.sprite_actuelle) >= len(self.deplacement):
-                self.sprite_actuelle = 0
-                self.mouvement = False
-            self.monstre_image = self.deplacement[int(self.sprite_actuelle)]
+    def mvt(self, target_x, target_y):
+        distance_x = target_x - self.x
+        distance_y = target_y - self.y
+        distance = (distance_x**2 + distance_y**2)**0.5
         
-        
-    
+        if distance <  450:
+            if self.x <player.rect[0]:
+                self.x += self.vitesse
+            if self.x > player.rect[0]:
+                self.x -= self.vitesse
+            if self.y < player.rect[1]:
+                self.y += self.vitesse
+            if self.y > player.rect[1]:
+                self.y -= self.vitesse
+        else:
+            self.x = self.x
+            self.y = self.y
+
+
     
             
             
@@ -176,16 +162,24 @@ def main_jeux():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
                     player.mouvement_droite()
-                    position_BG[0] -= 20
+                    position_BG[0] -= 25
+                    for zmb in lst_zmb:
+                        zmb.x -= 25
                 if event.key == pygame.K_z:
-                    position_BG[1] += 20
+                    position_BG[1] += 25
+                    for zmb in lst_zmb:
+                        zmb.y += 25
                     player.mouvement_haut()
                 if event.key == pygame.K_s:
-                    position_BG[1] -= 20
+                    position_BG[1] -= 25
+                    for zmb in lst_zmb:
+                        zmb.y -= 25
                     player.mouvement_bas()
                 if event.key == pygame.K_q:
                     player.mouvement_gauche()
-                    position_BG[0] += 20
+                    position_BG[0] += 25
+                    for zmb in lst_zmb:
+                        zmb.x += 25
                   
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -196,9 +190,7 @@ def main_jeux():
         screen.blit(BG, position_BG)
         for zmb in lst_zmb:
             zmb.affichage()
-            zmb.mvt()
-            zmb.mouvements()
-            zmb.update(0.25)
+            zmb.mvt(player.rect[0], player.rect[1])
         player.barre_vie()
         player.draw()
         player.update(0.25)
@@ -208,6 +200,23 @@ def main_jeux():
                 
 main_jeux()       
     
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+
+
+
+
+
+
+
         
         
         
