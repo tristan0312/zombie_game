@@ -278,10 +278,8 @@ def main_jeux():
             for zmb in lst_zmb:
                 if zmb.vie <= 0:
                     zmb.x = -100
-                    zmb.y = -100
-                   
-                    
-                if zmb.x - 30  <bullet.x< zmb.x + 30 and zmb.y - 30  <bullet.y< zmb.y + 30:
+                    zmb.y = -100 
+                if zmb.x - 40  <bullet.x< zmb.x + 40 and zmb.y - 40  <bullet.y< zmb.y + 40:
                     zmb.vie -= 1
             
         player.barre_vie()
@@ -293,20 +291,6 @@ def main_jeux():
                 
                 
 main_jeux()
-
-
-    
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-
 
 
 
