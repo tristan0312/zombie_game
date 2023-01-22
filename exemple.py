@@ -134,8 +134,8 @@ class Zombie(pygame.sprite.Sprite):
         self.image = pygame.image.load('0.png')
         self.rect = self.image.get_rect()
         self.taille = 10
-        self.x = randint(100,500)
-        self.y = randint(100,500)
+        self.x = randint(100,1600)
+        self.y = randint(100,1000)
         self.rect.topleft = [self.x,self.y]
         self.vitesse = 1
         self.vie = 50
