@@ -128,14 +128,15 @@ position_BG = BG.get_rect()
 position_BG.topleft = (-1100, -1300)
 
 
+
 class Zombie(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load('0.png')
         self.rect = self.image.get_rect()
         self.taille = 10
-        self.x = randint(100,1600)
-        self.y = randint(100,1000)
+        self.x = randint(10,1500)
+        self.y = randint(10,900)
         self.rect.topleft = [self.x,self.y]
         self.vitesse = 1
         self.vie = 50
@@ -169,7 +170,7 @@ class Zombie(pygame.sprite.Sprite):
         if distance <= 40:
             player.vie -= 0.5
         
-        if distance <  700:
+        if distance < 900:
             if self.rect[0] < player.rect[0]:
                 self.rect[0] += self.vitesse
             if self.rect[0] > player.rect[0]:
@@ -240,20 +241,51 @@ def loose():
 
 
 player_bullets = []
+
 zombie = pygame.sprite.Group()
-for i in range(5):
+for i in range(1):
     monstre = Zombie()
     zombie.add(monstre)
 
+def vague(n):
+    for i in range(n):
+        monstre = Zombie()
+        zombie.add(monstre)            
+
 def main_jeux():
+    n = 2
+    cooldown = 400
+    last_shot = 0
     while True:
+        
         screen.fill('blue')
         mouse_x, mouse_y = pygame.mouse.get_pos()
         
+        
+        
+        if (player.rect.left - 250) < position_BG.left:
+            player.vie -= 0.3
+            
+        if (player.rect.right + 450) > position_BG.right:
+            player.vie -= 0.3
+            
+        if (player.rect.top - 20) < position_BG.top:
+            player.vie -= 0.3
+    
+        if (player.rect.bottom + 400) > position_BG.bottom:
+            player.vie -= 0.3
+            
+        
+        if len(zombie) == 0:
+            vague(n)
+            n += 1
+
+       
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
+                if event.button == 1 and pygame.time.get_ticks() - last_shot > cooldown:
                     player_bullets.append(Playerbullet(player.rect[0], player.rect[1] + 10, mouse_x, mouse_y))
+                    last_shot = pygame.time.get_ticks()
                     
                     
             if event.type == pygame.KEYDOWN:
@@ -302,8 +334,7 @@ def main_jeux():
                esprit.kill()
             for bullet in player_bullets:
                 esprit.distance_balle(bullet.x, bullet.y)
-            
-            
+         
             
         for bullet in player_bullets:
             bullet.main(screen)
@@ -329,5 +360,6 @@ def main_jeux():
                 
                 
 main_jeux()
+
 
 
