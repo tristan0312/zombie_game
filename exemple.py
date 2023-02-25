@@ -199,7 +199,7 @@ class Zombie(pygame.sprite.Sprite):
         distance_y = target_y - self.rect[1]
         distance = (distance_x**2 + distance_y**2)**0.5
         
-        if distance <= 70:
+        if distance <= 65:
             self.vie -= 0.8
                 
    
@@ -252,7 +252,13 @@ for i in range(1):
 def vague(n):
     for i in range(n):
         monstre = Zombie('0.png', '1.png', '2.png', '3.png', 50, 0.5, 1, -10)
-        zombie.add(monstre)            
+        zombie.add(monstre)
+        
+def scrore(n):
+     font = pygame.font.SysFont("Pixelade", 55)
+     text = font.render("Score: " + str(n), True, "white")
+     screen.blit(text, (20, 70))
+    
 
 def main_jeux():
     n = 2
@@ -260,10 +266,12 @@ def main_jeux():
     last_shot = 0
     apparition = True
     apparition_2 = True
+    nb_mort = 0
     while True:
         
         screen.fill('blue')
         mouse_x, mouse_y = pygame.mouse.get_pos()
+        
         
         
         
@@ -349,6 +357,7 @@ def main_jeux():
             esprit.barre_vie()
             if esprit.vie <=0:
                esprit.kill()
+               nb_mort += 1
             for bullet in player_bullets:
                 esprit.distance_balle(bullet.x, bullet.y)
          
@@ -358,6 +367,7 @@ def main_jeux():
         
         
         if player.vie <= 0:
+            scrore(nb_mort)
             loose()
             time.sleep(3)
             sys.exit()
@@ -371,7 +381,7 @@ def main_jeux():
         player.barre_vie()
         player.draw()
         player.update(0.25)
-        
+        scrore(nb_mort)
         pygame.display.flip()
         clock.tick(60)
                 
